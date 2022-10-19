@@ -59,7 +59,6 @@
 (define (getNodeWhichIsNot path notNode [result #f])
   (cond
     ((and (not (number? (car path))) (= (string-length (symbol->string (car path))) 1) (not (equal? (car path) notNode))) (car path))
-    ; ((= (length path) 1) #f)
     ((and (= (length path) 0) (or (= (length result) 1) (equal? result #f))) result)
 
     (else (getNodeWhichIsNot (cdr path) notNode))
@@ -68,24 +67,11 @@
 
 (define (funktion liste start end [templiste '()] [endliste '()])
   (cond
-    ; ((listContainsPathWithNode endliste end) endliste)
     ((equal? start end) endliste)
-    ; ((>= (length templist
     (else
      (funktion (remove* (pathsWithNode liste start) liste) (getNodeWhichIsNot (car (sortList (pathsWithNode liste start))) start) end (car (sortList (pathsWithNode liste start))) (append endliste (list (car (sortList (pathsWithNode liste start)))))))
-    ; (funktion liste (getNodeWhichIsNot (car (sortList liste)) start) end (cdr (sortList (pathsWithNode liste start))) (append endliste (car (sortList (pathsWithNode liste start)))))
-    ;  (else endliste)
     )
 
   )
-; (sortList (pathsWithNode ausgangsliste2))
 (funktion ausgangsliste2 'S 'Z)
-; (listContainsPathWithNode '((2 G M) (5 N S)) 'S)
-; (containsNode '(5 N 6) 'S)
-; (getNodeWhichIsNot '(2 G M) 'M)
-; (string-length (symbol->string 'M))
-; (getNodeWhichIsNot (car (sortList (pathsWithNode ausgangsliste2 'S))) 'S)
-; (funktion ausgangsliste2 'S 'Z)
-; (remove* '(1) '(1 2 3))
-; (sortList ausgangsliste2)
 
