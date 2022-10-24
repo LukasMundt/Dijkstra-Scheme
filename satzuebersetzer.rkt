@@ -98,8 +98,8 @@
   )
 
 (define (funktion liste start end [templiste '()] [endliste '()])
-  (display endliste)
-  (display "-------")
+  ; (display endliste)
+  ; (display "-------")
   (cond
     ((equal? start end) endliste) ;endweder Endbedingung oder Verfahren überdenken, wenn ein kürzerer Pfad gefunden wird, muss das Ergebnis von zuvor revidiert werden, ggf. Funktion, die das Gewicht der Pfade addiert nutzen
     ; ((= number 10) endliste)
@@ -182,7 +182,7 @@
     )
   )
 
-(funktion3 ausgangsliste6 'S 'Z '((+inf.0 'S '-)(+inf.0 'T '-)(+inf.0 'U '-)(+inf.0 'Z '-)) 'S)
+; (funktion3 ausgangsliste6 'S 'Z '((+inf.0 'S '-)(+inf.0 'T '-)(+inf.0 'U '-)(+inf.0 'Z '-)) 'S)
 ; (cons (cons 0 (cdar '((+inf.0 'S '-)(+inf.0 'T '-)(+inf.0 'U '-)(+inf.0 'Z '-))))(cdr '((+inf.0 'S '-)(+inf.0 'T '-)(+inf.0 'U '-)(+inf.0 'Z '-))))
 ; (car (reverse '((1 S T Hallo) (3 T U Hallo) (100 S Z Hallo))))
 ; (infinite? +inf.0)
@@ -214,10 +214,6 @@
   )
 
 (define (translate satz liste [result ""])
-  (display satz)
-  (display "-")
-  (display result)
-  (display "------")
   (cond
     ((equal? result "") (translate satz liste (getSentence (funktion liste 'S (string->symbol (car (getWords satz)))))))
     ((>= (length (getWords satz)) 2) (string-append result " " (translate (wordsToSentence (cdr (getWords satz))) liste (getSentence (funktion liste (string->symbol (car (getWords satz))) (string->symbol (cadr (getWords satz))))))))
@@ -227,12 +223,15 @@
     )
   )
 
-; (getSentence (funktion ausgangsliste0 'S 'Z))
+  (define (translate2 satz liste [result ""] [previousNode 'S] [endzeichen "."])
+  (cond
+    ((equal? result "") (translate2 (wordsToSentence (cdr (getWords (substring satz 0 (- (string-length satz) 1))))) liste (getSentence (list (car (pathsWithNode (pathsWithNode liste previousNode) (string->symbol (car (getWords satz))))))) (string->symbol (car (getWords satz))) (substring satz (- (string-length satz) 1))))
+    ((>= (length (getWords satz)) 2) (translate2 (wordsToSentence (cdr (getWords satz))) liste (string-append result " " (getSentence (list (car (pathsWithNode (pathsWithNode liste previousNode) (string->symbol (car (getWords satz)))))))) (string->symbol (car (getWords satz))) endzeichen))
+    ((and (= (length (getWords satz)) 1) (not (= (string-length satz) 0))) (translate2 "" liste (string-append result " " (getSentence (list (car (pathsWithNode (pathsWithNode liste previousNode) (string->symbol (car (getWords satz)))))))) (string->symbol (car (getWords satz))) endzeichen))
+    (else
+     (string-append result endzeichen)
+    ))
+  )
 
-; (translate "Ich liebe Burger" ausgangsliste0)
-; (funktion2 ausgangsliste6 'S 'Z)
-; (funktion2 ausgangsliste0 'Ich 'liebe)
-; (append '((Hallo)) '(Hallo) '(Hallo))
 
-; Problem: wenn später noch ein kürzerer Pfad gefunden wird, wird dies nicht übernommen
-; die Sortierung nach dem Gewicht einer Kante ist bei vielen Kanten, mit gleichem Gewicht nicht zielführend
+(translate2 "Ich hasse Burger!" ausgangsliste0)
