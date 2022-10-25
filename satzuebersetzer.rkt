@@ -1,10 +1,7 @@
 #lang racket
 
-(define ausgangsliste0 '((100 S Ich I)(100 Ich liebe love)(100 Ich hasse hate)(100 hasse Burger burger)(100 liebe Burger burger)))
-
 ; Prüft, ob in einer nicht verschachtelten Liste die gesuchte Zeichenkette vorhanden ist
 ; der Default-Wert von f ist eine leere Liste
-; Diese Funktion unterstützt Nodes mit mehr als einem Buchstaben.
 (define (containsNode haystack needle [f '()])
   (if
    (equal? (car haystack) needle)
@@ -16,7 +13,7 @@
     ))
   )
 
-
+; Gibt alle Kanten zurück, die den übergebenen Knoten beinhalten.
 (define (pathsWithNode liste node [endlist '()])
   (if
    (> (length liste) 0)
@@ -29,7 +26,7 @@
    )
   )
 
-
+; Gibt die Gewichte aller Kanten in einer Liste in einer Liste zurück.
 (define (getIndizes liste)
   (if
    (> (length liste) 0)
@@ -49,18 +46,6 @@
      )
     ))
 
-
-(define (getWeightOfPaths liste [weight 0])
-  (cond
-    ((= (length liste) 1) (+ (car (getIndizes liste)) weight))
-    (else
-     (getWeightOfPaths (cdr liste) (+ (car (getIndizes liste)) weight))
-     )
-    )
-  )
-
-
-
 (define (getSentence liste [string ""])
   (cond
     ((>= (length liste) 1) (getSentence (cdr liste) (string-append string " " (symbol->string (cadddr (car liste))))))
@@ -69,6 +54,7 @@
     )
   )
 
+; Diese Funktion liefert alle Wörter eines Strings in einer Liste in der richtigen Reihenvolge zurück.
 (define (getWords sentence [liste '()] [position 0] [string2 ""])
   (cond
     ((= (string-length sentence) position) (append liste (list string2)))
@@ -79,6 +65,7 @@
     )
   )
 
+; Diese Funktion setzt Strings in einer Liste zu einem String zusammen.
 (define (wordsToSentence liste [result ""])
   (cond
     ((>= (length liste) 1) (wordsToSentence (cdr liste) (string-append result " " (car liste))))
@@ -87,15 +74,19 @@
     )
   )
 
-  (define (translate satz liste [result ""] [previousNode 'S] [endzeichen "."])
+; Diese Funktion übersetzt den übergebenen String.
+(define (translate satz liste [result ""] [previousNode 'S] [endzeichen "."])
+  (cond
+    ((equal? result "") (displayln (string-append "Ausgangssatz : " satz)))
+    )
   (cond
     ((equal? result "") (translate (wordsToSentence (cdr (getWords (substring satz 0 (- (string-length satz) 1))))) liste (getSentence (list (car (pathsWithNode (pathsWithNode liste previousNode) (string->symbol (car (getWords satz))))))) (string->symbol (car (getWords satz))) (substring satz (- (string-length satz) 1))))
     ((>= (length (getWords satz)) 2) (translate (wordsToSentence (cdr (getWords satz))) liste (string-append result " " (getSentence (list (car (pathsWithNode (pathsWithNode liste previousNode) (string->symbol (car (getWords satz)))))))) (string->symbol (car (getWords satz))) endzeichen))
     ((and (= (length (getWords satz)) 1) (not (= (string-length satz) 0))) (translate "" liste (string-append result " " (getSentence (list (car (pathsWithNode (pathsWithNode liste previousNode) (string->symbol (car (getWords satz)))))))) (string->symbol (car (getWords satz))) endzeichen))
     (else
-     (string-append result endzeichen)
-    ))
+     (displayln (string-append "Übersetzung  : " result endzeichen))
+     ))
   )
 
-
-(translate "Ich hasse Burger!" ausgangsliste0)
+(define ausgangsliste0 '((100 S Ich I)(100 S Sie She)(100 S Er He)(100 Sie mag likes)(100 Sie liebt loves)(100 liebt Burger loves)(100 Ich mag like)(100 Er mag likes)(100 Du magst like)(100 Er mag likes)(100 magst Burger burger)(100 mag Burger burger)(100 Ich liebe love)(100 Ich hasse hate)(100 hasse Burger burger)(100 liebe Burger burger)))
+(translate "Ich liebe Burger!" ausgangsliste0)
